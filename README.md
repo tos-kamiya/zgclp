@@ -42,6 +42,14 @@ zgclp will output the following two interpretations.
 
 ## How do I use zgclp?
 
+1. Call the function `arg_parse`, giving the command line arguments as an array of strings (`&[&str]`) and the starting position of parsing.
+
+2. The return value is a tuple with three values. 
+
+* The first value indicates whether the result of the parse is an option or a normal argument, etc. 
+* The second value indicates the increment to the next parse start position if the result is interpreted as an option with no arguments, otherwise None. 
+* The third value is the increment to the next parsing start position and the argument string, if the parsing result is interpreted as an option with arguments. Otherwise, None.
+
 See a sample code: `src/main.rs`.
 
 ## License
