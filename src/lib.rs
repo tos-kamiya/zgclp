@@ -48,59 +48,57 @@ pub fn arg_parse<'a>(arguments: &'a [&str], index: usize) -> (Arg<'a>, Option<us
 
 #[cfg(test)]
 mod test {
-    #[cfg(test)]
-
     use super::*;
     
     #[test]
     fn short_option_simple() {
         let args = vec!["-a", "1", "-f", "-g3"];
-        let v = parse(&args, 0);
+        let v = arg_parse(&args, 0);
         assert_eq!(v, (Arg::Option("-a"), Some(1), some_pair!(2, "1")));
-        let v = parse(&args, 1);
+        let v = arg_parse(&args, 1);
         // eprintln!("{:?}", v);
         assert_eq!(v, (Arg::Value, None, some_pair!(1, "1")));
-        let v = parse(&args, 2);
+        let v = arg_parse(&args, 2);
         assert_eq!(v, (Arg::Option("-f"), Some(1), None));
-        let v = parse(&args, 3);
+        let v = arg_parse(&args, 3);
         assert_eq!(v, (Arg::Option("-g"), None, some_pair!(1, "3")));
     }
     
     #[test]
     fn short_option_complicated() {
         let args = vec!["-a=1", "-f", "-", "-g", "--", "-h"];
-        let v = parse(&args, 0);
+        let v = arg_parse(&args, 0);
         assert_eq!(v, (Arg::Option("-a"), None, some_pair!(1, "=1")));
-        let v = parse(&args, 1);
+        let v = arg_parse(&args, 1);
         assert_eq!(v, (Arg::Option("-f"), Some(1), some_pair!(2, "-")));
-        let v = parse(&args, 2);
+        let v = arg_parse(&args, 2);
         assert_eq!(v, (Arg::Value, None, some_pair!(1, "-")));
-        let v = parse(&args, 3);
+        let v = arg_parse(&args, 3);
         assert_eq!(v, (Arg::Option("-g"), Some(1), None));
-        let v = parse(&args, 4);
+        let v = arg_parse(&args, 4);
         assert_eq!(v, (Arg::Separator("--"), Some(1), None));
-        let v = parse(&args, 5);
+        let v = arg_parse(&args, 5);
         assert_eq!(v, (Arg::Option("-h"), Some(1), None));
     }
     
     #[test]
     fn long_option_simple() {
         let args = vec!["--aa", "1", "--ff", "--gg=3"];
-        let v = parse(&args, 0);
+        let v = arg_parse(&args, 0);
         assert_eq!(v, (Arg::Option("--aa"), Some(1), some_pair!(2, "1")));
-        let v = parse(&args, 1);
+        let v = arg_parse(&args, 1);
         // eprintln!("{:?}", v);
         assert_eq!(v, (Arg::Value, None, some_pair!(1, "1")));
-        let v = parse(&args, 2);
+        let v = arg_parse(&args, 2);
         assert_eq!(v, (Arg::Option("--ff"), Some(1), None));
-        let v = parse(&args, 3);
+        let v = arg_parse(&args, 3);
         assert_eq!(v, (Arg::Option("--gg"), None, some_pair!(1, "3")));
     }
     
     #[test]
     fn match_test() {
         let args = vec!["--aa", "1", "--bb=3"];
-        let v = parse(&args, 0);
+        let v = arg_parse(&args, 0);
         match v {
             (Arg::Option("--aa"), Some(1), Some((2, "1"))) => { }
             _ => { panic!("match fails.") }
@@ -112,7 +110,7 @@ mod test {
             _ => { panic!("match fails.") }
         }
     
-        let v = parse(&args, 2);
+        let v = arg_parse(&args, 2);
         match v {
             (Arg::Option("--bb"), None, Some((eat, value))) => { 
                 assert_eq!(eat, 1 as usize);
