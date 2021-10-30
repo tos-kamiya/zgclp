@@ -1,9 +1,12 @@
 [package]
 name = "zgclp"
+description = "Zgclp (Zero-grammar definition command-line parser)"
 version = "0.1.0"
 edition = "2021"
 authors = ["Toshihiro Kamiya <kamiya@mbj.nifty.com>"]
 license = "MIT/Apache-2.0"
+keywords = ["command-line parser"]
+category = ["command-line-interface"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

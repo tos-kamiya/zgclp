@@ -1,3 +1,7 @@
+#![doc = include_str!("../README.md")]
+
+/// An enum type that indicates whether the parsing result is a command-line argument, 
+/// an option, or a separator.
 #[derive(Debug, PartialEq)]
 pub enum Arg<'a> {
     Value,
@@ -9,6 +13,15 @@ macro_rules! some_pair {
     ( $v1:expr, $v2:expr ) => ( Some(($v1, $v2)) )
 }
 
+/// Function to parse command line arguments.
+/// To use this function, pass the string array of command-line arguments (`arguments: &[&str]`) and 
+/// the position to start parsing (`index: usize`).  
+/// The return value is a tuple with three values (`(Arg<'a>, Option<usize>, Option<(usize, &'a str)>)`). 
+/// The first value indicates whether the result of the parse is an option or a normal argument, etc.   
+/// The second value indicates the increment to the next parse start position if the result is 
+/// interpreted as an option with no arguments, otherwise None.  
+/// The third value is the increment to the next parsing start position and the argument string, 
+/// if the parsing result is interpreted as an option with arguments. Otherwise, None.  
 pub fn arg_parse<'a>(arguments: &'a [&str], index: usize) -> (Arg<'a>, Option<usize>, Option<(usize, &'a str)>) {
     let a = arguments[index];
     if a == "-" {
