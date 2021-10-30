@@ -50,7 +50,7 @@ zgclp will output the following two interpretations.
 * The second value indicates the increment to the next parse start position if the result is interpreted as an option with no arguments, otherwise None. 
 * The third value is the increment to the next parsing start position and the argument string, if the parsing result is interpreted as an option with arguments. Otherwise, None.
 
-See a sample code: `src/main.rs`.
+See a sample code: [src/main.rs](src/main.rs).
 
 ## License
 
@@ -68,3 +68,8 @@ at your option.
 Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
 dual licensed as above, without any additional terms or conditions.
+
+## Links
+
+* [zgclp's page in Create.io](https://crates.io/crates/zgclp)
+* [zgclp's repository in GitHub](https://github.com/tos-kamiya/zgclp)
