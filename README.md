@@ -71,5 +71,5 @@ dual licensed as above, without any additional terms or conditions.
 
 ## Links
 
-* [zgclp's page in Create.io](https://crates.io/crates/zgclp)
+* [zgclp's page in Crates.io](https://crates.io/crates/zgclp)
 * [zgclp's repository in GitHub](https://github.com/tos-kamiya/zgclp)
