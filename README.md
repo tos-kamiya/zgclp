@@ -1,7 +1,7 @@
 # zgclp
 
 Zgclp (Zero-grammer definition command-line parser) is one of Rust's command-line parsers. 
-A normal command-line parser generates a parser from the definition of command-line options that accepts a command-line according to its grammar. In contrast, zgclp uses a universal parser to discover what it assumes to be options and or arguments from the given command line arguments.
+A normal command-line parser generates a parser from the definition of command-line options that accepts a command line according to its grammar. In contrast, zgclp uses a universal parser to discover what it assumes to be options or arguments from the given command line arguments.
 
 ## How it works?
 
