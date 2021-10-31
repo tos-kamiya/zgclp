@@ -7,6 +7,7 @@ pub enum Arg<'a> {
     Value,
     Option(&'a str),
     Separator(&'a str),
+    Processed,
 }
 
 macro_rules! some_pair {
@@ -14,16 +15,16 @@ macro_rules! some_pair {
 }
 
 /// Function to parse command line arguments.
-/// To use this function, pass the string array of command-line arguments (`arguments: &[&str]`) and 
+/// To use this function, pass the string array of command-line arguments (`argv: &'a [&'s str]`) and 
 /// the position to start parsing (`index: usize`).  
-/// The return value is a tuple with three values (`(Arg<'a>, Option<usize>, Option<(usize, &'a str)>)`). 
+/// The return value is a tuple with three values (`(Arg<'s>, Option<usize>, Option<(usize, &'s str)>)`). 
 /// The first value indicates whether the result of the parse is an option or a normal argument, etc.   
 /// The second value indicates the increment to the next parse start position if the result is 
 /// interpreted as an option with no arguments, otherwise None.  
 /// The third value is the increment to the next parsing start position and the argument string, 
 /// if the parsing result is interpreted as an option with arguments. Otherwise, None.  
-pub fn arg_parse<'a>(arguments: &'a [&str], index: usize) -> (Arg<'a>, Option<usize>, Option<(usize, &'a str)>) {
-    let a = arguments[index];
+pub fn arg_parse<'s, 'a>(argv: &'a [&'s str], index: usize) -> (Arg<'s>, Option<usize>, Option<(usize, &'s str)>) {
+    let a = argv[index];
     if a == "-" {
         (Arg::Value, None, some_pair!(1, a))
     } else if a == "--" {
@@ -31,8 +32,8 @@ pub fn arg_parse<'a>(arguments: &'a [&str], index: usize) -> (Arg<'a>, Option<us
     } else if a.starts_with("--") {
         if let Some(i) = a.find("=") {
             (Arg::Option(&a[..i]), None, some_pair!(1, &a[i+1..]))
-        } else if index + 1 < arguments.len() {
-            let a2 = arguments[index + 1];
+        } else if index + 1 < argv.len() {
+            let a2 = argv[index + 1];
             if a2 == "-" || ! a2.starts_with("-") {
                 (Arg::Option(a), Some(1), some_pair!(2, a2))
             } else {
@@ -44,8 +45,8 @@ pub fn arg_parse<'a>(arguments: &'a [&str], index: usize) -> (Arg<'a>, Option<us
     } else if a.starts_with("-") {
         if a.len() > 2 {
             (Arg::Option(&a[..2]), None, some_pair!(1, &a[2..]))
-        } else if index + 1 < arguments.len() {
-            let a2 = arguments[index + 1];
+        } else if index + 1 < argv.len() {
+            let a2 = argv[index + 1];
             if a2 == "-" || ! a2.starts_with("-") {
                 (Arg::Option(a), Some(1), some_pair!(2, a2))
             } else {
@@ -56,6 +57,28 @@ pub fn arg_parse<'a>(arguments: &'a [&str], index: usize) -> (Arg<'a>, Option<us
         }
     } else {
         (Arg::Value, None, some_pair!(1, a))
+    }
+}
+
+/// Almost the same as arg_parse, but with built-in argument collection.
+pub fn arg_parse_a<'s, 'a, 'b>(argv: &'a [&'s str], index: usize, args: &'b mut Vec<&'s str>) -> (Arg<'s>, Option<usize>, Option<(usize, &'s str)>) {
+    let (a, na, wa) = arg_parse(argv, index);
+    match a {
+        Arg::Value => {
+            if let Some((eat, value)) = wa {
+                args.push(value);
+                (Arg::Processed, Some(eat), None)
+            } else {
+                panic!("zgclp internal error (arg_parse_a Arg::Value)")
+            }
+        }
+        Arg::Separator(_name) => {
+            args.extend(&argv[index + 1..]);
+            (Arg::Processed, Some(argv.len() - index), None)
+        }
+        _ => {
+            (a, na, wa)
+        }
     }
 }
 

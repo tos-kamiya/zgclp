@@ -1,9 +1,7 @@
 use std::env;
 
-use zgclp::{arg_parse, Arg};
+use zgclp::{arg_parse_a, Arg};
 
-const VERSION: &'static str = env!("CARGO_PKG_VERSION");
-const NAME: &'static str = env!("CARGO_PKG_NAME");
 const DOC: &'static str = "Zgclp demonstration.
 
 Usage:
@@ -20,68 +18,53 @@ fn main() {
     let argv: Vec<&str> = argv_store.iter().map(AsRef::as_ref).collect();
 
     let mut args = Vec::<&str>::new();
-    let mut output_file = None; // a sample option, with argument
-    let mut dry_run = false; // a sample option, w/o argument
+
+    // ** Sample options **
+    let mut output_file = None;
+    let mut dry_run = false;
 
     let mut arg_index = 1;
     while arg_index < argv.len() {
-        let eat = match arg_parse(&argv, arg_index) {
-            (Arg::Option("-h" | "--help"), Some(_eat), _) => {
-                println!("{}", DOC);
-                std::process::exit(0);
-            }
-            (Arg::Option("-v" | "--version"), Some(_eat), _) => {
-                println!("{} {}", NAME, VERSION);
-                std::process::exit(0);
-            }
-
-            // // Option with argument
-            // (Arg::Option(OPTION_NAME), _, Some((eat, value))) => {
-            //     ....
-            //     eat
-            // }
-
-            // // Option w/o argument
-            // (Arg::Option(OPTION_NAME), Some(eat), _) => {
-            //     ....
-            //     eat
-            // }
-
-            // Sample options
+        let eat = match arg_parse_a(&argv, arg_index, &mut args) {
+            // ** Sample option (with argument) **
             (Arg::Option("-o" | "--output"), _, Some((eat, value))) => {
                 output_file = Some(value);
                 eat
             }
+            // ** Sample option (w/o argument) **
             (Arg::Option("-n" | "--dry-run"), Some(eat), _) => {
                 dry_run = true;
                 eat
             }
+            // Help message option
+            (Arg::Option("-h" | "--help"), Some(_eat), _) => {
+                print!("{}", DOC);
+                std::process::exit(0);
+            }
+            // Version info option
+            (Arg::Option("-v" | "--version"), Some(_eat), _) => {
+                let version = env!("CARGO_PKG_VERSION");
+                let name = env!("CARGO_PKG_NAME");
+                println!("{} {}", name, version);
+                std::process::exit(0);
+            }
 
-            // Argument
-            (Arg::Value, None, Some((eat, value))) => {
-                args.push(value);
+            // Skip arguments by zgclp / Error handling
+            (Arg::Processed, Some(eat), None) => {
                 eat
             }
-
-            // Separator
-            (Arg::Separator(_name), Some(_eat), None) => {
-                args.extend(&argv[arg_index + 1..]);
-                argv.len() - arg_index
-            }
-
-            // Unknown option/parse error
             (Arg::Option(name), _, _) => {
                 eprintln!("Error: unknown option: {}", name);
                 std::process::exit(1);
             }
             _ => {
-                panic!("Internal error in command-line argument parsing.");
+                panic!("Internal error in command-line parsing.");
             }
         };
         arg_index += eat;
     }
 
-    // Do stuff
+    // ** Sample stuff **
     if let Some(n) = output_file {
         println!("output_file = {}", n);
     }
