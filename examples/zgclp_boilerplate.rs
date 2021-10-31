@@ -4,7 +4,7 @@
 
 use std::env;
 
-use zgclp::{arg_parse_a, Arg};
+use zgclp::{arg_parse_ahv, Arg};
 
 const DOC: &'static str = "Zgclp demonstration.
 
@@ -29,7 +29,7 @@ fn main() {
 
     let mut arg_index = 1;
     while arg_index < argv.len() {
-        let eat = match arg_parse_a(&argv, arg_index, &mut args) {
+        let eat = match arg_parse_ahv(&argv, arg_index, &mut args, DOC) {
             // ** Sample option (with argument) **
             (Arg::Option("-o" | "--output"), _, Some((eat, value))) => {
                 output_file = Some(value);
@@ -40,25 +40,13 @@ fn main() {
                 dry_run = true;
                 eat
             }
-            // Help message option
-            (Arg::Option("-h" | "--help"), Some(_eat), _) => {
-                print!("{}", DOC);
-                std::process::exit(0);
-            }
-            // Version info option
-            (Arg::Option("-v" | "--version"), Some(_eat), _) => {
-                let version = env!("CARGO_PKG_VERSION");
-                let name = env!("CARGO_PKG_NAME");
-                println!("{} {}", name, version);
-                std::process::exit(0);
-            }
 
             // Skip arguments processed by zgclp / Error handling
             (Arg::Processed, Some(eat), None) => {
                 eat
             }
             (Arg::Option(name), _, _) => {
-                eprintln!("Error: unknown option: {}", name);
+                eprintln!("Error: unknown option, or option missing argument: {}", name);
                 std::process::exit(1);
             }
             _ => {

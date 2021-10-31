@@ -1,13 +1,30 @@
 #![doc = include_str!("../README.md")]
 
+use std::env;
+
+fn rstrip(s: &str) -> &str {
+    let mut tail_spaces = 0;
+    let mut chars = s.chars();
+    loop {
+        if let Some(last_char) = chars.next_back() {
+            if last_char == '\n' || last_char == ' ' || last_char == '\t' {
+                tail_spaces += 1;
+                continue;
+            }
+        }
+        break;
+    }
+    &s[0 .. s.len() - tail_spaces]
+}
+
 /// An enum type that indicates whether the parsing result is a command-line argument, 
-/// an option, or a separator.
+/// an option, a separator, or an item that should be skipped because the parser has processed it.
 #[derive(Debug, PartialEq)]
 pub enum Arg<'a> {
-    Value,
-    Option(&'a str),
-    Separator(&'a str),
-    Processed,
+    Value, // (usual) argument
+    Option(&'a str), // option
+    Separator(&'a str), // separator
+    Processed, // should be skipped (because the parser has processed it)
 }
 
 macro_rules! some_pair {
@@ -60,7 +77,7 @@ pub fn arg_parse<'s, 'a>(argv: &'a [&'s str], index: usize) -> (Arg<'s>, Option<
     }
 }
 
-/// Almost the same as arg_parse, but with built-in argument collection.
+/// Almost the same as arg_parse, but collects the arguments.
 pub fn arg_parse_a<'s, 'a, 'b>(argv: &'a [&'s str], index: usize, args: &'b mut Vec<&'s str>) -> (Arg<'s>, Option<usize>, Option<(usize, &'s str)>) {
     let (a, na, wa) = arg_parse(argv, index);
     match a {
@@ -80,6 +97,39 @@ pub fn arg_parse_a<'s, 'a, 'b>(argv: &'a [&'s str], index: usize, args: &'b mut 
             (a, na, wa)
         }
     }
+}
+
+/// Helper function to handle the typical --help option.
+pub fn handle_help_option<'s, 't>(pr: (Arg<'s>, Option<usize>, Option<(usize, &'s str)>), help_message: &'t str) -> (Arg<'s>, Option<usize>, Option<(usize, &'s str)>) {
+    let (a, na, wa) = pr;
+    match a {
+        Arg::Option("-h" | "--help") => {
+            println!("{}", rstrip(help_message));
+            std::process::exit(0);
+        }
+        _ => (a, na, wa)
+    }
+}
+
+/// Helper function to handle the typical --version option.
+pub fn handle_version_option<'s, 't>(pr: (Arg<'s>, Option<usize>, Option<(usize, &'s str)>)) -> (Arg<'s>, Option<usize>, Option<(usize, &'s str)>) {
+    let (a, na, wa) = pr;
+    match a {
+        Arg::Option("-v" | "--version") => {
+            let version = env!("CARGO_PKG_VERSION");
+            let name = env!("CARGO_PKG_NAME");
+            println!("{} {}", name, version);
+            std::process::exit(0);
+        }
+        _ => (a, na, wa)
+    }
+}
+
+/// Almost the same as arg_parse, but collects the arguments and handles options --help and --version.
+pub fn arg_parse_ahv<'s, 't, 'a, 'b>(argv: &'a [&'s str], index: usize, args: &'b mut Vec<&'s str>, help_message: &'t str) -> (Arg<'s>, Option<usize>, Option<(usize, &'s str)>) {
+    let pr = arg_parse_a(argv, index, args);
+    let pr2 = handle_help_option(pr, help_message);
+    handle_version_option(pr2)
 }
 
 #[cfg(test)]
@@ -188,5 +238,11 @@ mod test {
         let argv = vec!["a.out", "-a", "1", "--", "2", "-g3"];
         let args = collect_arguments(&argv);
         assert_eq!(args, vec!["2", "-g3"]);
+    }
+
+    #[test]
+    fn rstrip_test() {
+        assert_eq!(rstrip("abc\n"), "abc");
+        assert_eq!(rstrip("abc  "), "abc");
     }
 }

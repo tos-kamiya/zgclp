@@ -5,10 +5,11 @@ A normal command-line parser generates a parser from the definition of command-l
 
 ## How it works?
 
-Try a sample program by `cargo run` with something like a command line including options and arguments.
+You can build the sample program with "cargo build" and try it as follows:
 
 ```sh
-$ cargo run foo -bar bal --bra boo
+$ cargo build
+$ target/debug/zgclp foo -bar bal --bra boo
 Argument "foo" .
 Option "-b" with argument "ar" .
 Argument "bal" .
