@@ -33,7 +33,7 @@ When you write a single letter of the alphabet as A, B, etc., zgclp accepts the 
 
 When the command line is
 
-`-a bc`.
+`-a bc`
 
 zgclp will output the following two interpretations.
 
@@ -50,7 +50,7 @@ zgclp will output the following two interpretations.
 * The second value indicates the increment to the next parse start position if the result is interpreted as an option with no arguments, otherwise None. 
 * The third value is the increment to the next parsing start position and the argument string, if the parsing result is interpreted as an option with arguments. Otherwise, None.
 
-See a sample code: [src/main.rs](src/main.rs).
+See a sample code [src/main.rs](src/main.rs) or a boilerplate [boilerplate_proj/src/main.rs](boilerplate_proj/src/main.rs).
 
 ## License
 
