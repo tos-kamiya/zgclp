@@ -5,10 +5,10 @@ A normal command-line parser generates a parser from the definition of command-l
 
 ## How it works?
 
-Do a `cargo build` and run `target/debug/zgclp` with something like command line arguments.
+Try a sample program by `cargo run` with something like a command line including options and arguments.
 
 ```sh
-> target/debug/zgclp foo -bar bal --bra boo 
+$ cargo run foo -bar bal --bra boo
 Argument "foo" .
 Option "-b" with argument "ar" .
 Argument "bal" .
@@ -42,6 +42,12 @@ zgclp will output the following two interpretations.
 
 ## How do I use zgclp?
 
+**Short Answer:**
+
+Copy the boilerplate code [examples/zgclp_boilerplate.rs](examples/zgclp_boilerplate.rs) as your `main.rs` and modify it.
+
+**Long Answer:**
+
 1. Call the function `arg_parse`, giving the command line arguments as an array of strings (`&[&str]`) and the starting position of parsing.
 
 2. The return value is a tuple with three values. 
@@ -50,7 +56,9 @@ zgclp will output the following two interpretations.
 * The second value indicates the increment to the next parse start position if the result is interpreted as an option with no arguments, otherwise None. 
 * The third value is the increment to the next parsing start position and the argument string, if the parsing result is interpreted as an option with arguments. Otherwise, None.
 
-See a sample code [src/main.rs](src/main.rs) or a boilerplate [boilerplate_proj/src/main.rs](boilerplate_proj/src/main.rs).
+If you want to let zgclp to collect (normal) command-line arguments, you can use `arg_parse_a` (instead of `arg_parse`) with passing a vector to store the arguments.
+
+See a sample code [src/main.rs](src/main.rs) or a boilerplate [examples/zgclp_boilerplate.rs](examples/zgclp_boilerplate.rs).
 
 ## License
 

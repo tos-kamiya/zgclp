@@ -1,3 +1,5 @@
+// run with `cargo run --example zgclp_boilerplate ....`.
+
 use std::env;
 
 use zgclp::{arg_parse_a, Arg};
@@ -49,7 +51,7 @@ fn main() {
                 std::process::exit(0);
             }
 
-            // Skip arguments by zgclp / Error handling
+            // Skip arguments processed by zgclp / Error handling
             (Arg::Processed, Some(eat), None) => {
                 eat
             }
