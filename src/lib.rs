@@ -155,4 +155,38 @@ mod test {
             _ => { panic!("match fails.") }
         }
     }
+
+    fn collect_arguments<'s, 'a>(argv: &'a [&'s str]) -> Vec::<&'s str> {
+        let mut args = Vec::<&str>::new();
+        let mut arg_index = 1;
+        while arg_index < argv.len() {
+            let eat = match arg_parse_a(&argv, arg_index, &mut args) {
+                (Arg::Option(_name), _, Some((eat, _value))) => {
+                    eat
+                }
+                (Arg::Option(_name), Some(eat), None) => {
+                    eat
+                }
+                (Arg::Processed, Some(eat), None) => {
+                    eat
+                }
+                _ => {
+                    panic!("Internal error in command-line parsing.");
+                }
+            };
+            arg_index += eat;
+        }
+        args
+    }
+
+    #[test]
+    fn argument_collection() {
+        let argv = vec!["a.out", "-a", "1", "2", "-g3"];
+        let args = collect_arguments(&argv);
+        assert_eq!(args, vec!["2"]);
+
+        let argv = vec!["a.out", "-a", "1", "--", "2", "-g3"];
+        let args = collect_arguments(&argv);
+        assert_eq!(args, vec!["2", "-g3"]);
+    }
 }

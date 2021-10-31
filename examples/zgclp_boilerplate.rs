@@ -1,4 +1,6 @@
-// run with `cargo run --example zgclp_boilerplate ....`.
+// run with `cargo run --example zgclp_boilerplate -- ....`, e.g.:
+// cargo run --example zgclp_boilerplate -- -h
+// cargo run --example zgclp_boilerplate -- -n 1
 
 use std::env;
 
