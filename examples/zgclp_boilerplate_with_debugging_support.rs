@@ -55,12 +55,11 @@ fn main() {
                 eprintln!("Error: unknown option, or option missing argument: {}", name);
                 std::process::exit(1);
             }
-            
+
             // debug, in case you want to examine the behavior of arg_parse in more detail
             (Arg::Value, None, Some((eat, _value))) => {
                 eat
             }
-
             _ => {
                 panic!("Internal error in command-line parsing.");
             }
