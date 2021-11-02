@@ -19,7 +19,7 @@ fn rstrip(s: &str) -> &str {
 
 /// An enum type that indicates whether the parsing result is a command-line argument, 
 /// an option, a separator, or an item that should be skipped because the parser has processed it.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum Arg<'a> {
     Value, // (usual) argument
     Option(&'a str), // option
