@@ -10,11 +10,11 @@ fn main() {
     let mut arg_index = 1;
     while arg_index < argv.len() {
         let eat = match arg_parse(&argv, arg_index) {
-            (Arg::Option(name), _, Some((eat, value))) => {
+            (Arg::Option(name), _, Some((eat, value))) => { // if the option can be interpreted as having an argument (i)
                 println!("Option \"{}\" with argument \"{}\" .", name, value);
                 eat
             }
-            (Arg::Option(name), Some(eat), _) => {
+            (Arg::Option(name), Some(eat), _) => { // if the option can be interpreted as having NO arguments (ii)
                 println!("Option \"{}\" w/o argument .", name);
                 eat
             }
@@ -33,3 +33,8 @@ fn main() {
         arg_index += eat;
     }
 }
+
+// In this program, the case where an option can be interpreted as having an argument (i) is given 
+// priority over the case where it can be interpreted as not having an argument (ii). 
+// Therefore, if an option can be interpreted as either (i) or (ii), it is interpreted as (i). 
+//  The order of priority can be changed by flipping the order of clauses (i) and (ii) in the program.

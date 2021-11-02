@@ -1,7 +1,7 @@
 # zgclp
 
 Zgclp (Zero-grammar definition command-line parser) is one of Rust's command-line parsers. 
-A normal command-line parser generates a parser from the definition of command-line options that accepts a command line according to its grammar. In contrast, zgclp uses a universal parser to discover what it assumes to be options or arguments from the given command line arguments.
+A normal command-line parser generates a parser from the definition of command-line options that accepts a command line according to its grammar. In contrast, zgclp uses a universal parser to discover what it assumes to be options or arguments from the given command-line arguments.
 
 ## How it works?
 
@@ -38,7 +38,7 @@ When the command line is
 
 zgclp will output the following two interpretations.
 
-* The option `-a` appears with no arguments (the next `bc` is a normal command line argument that has nothing to do with the option `-a`).
+* The option `-a` appears with no arguments (the next `bc` is a normal command-line argument that has nothing to do with the option `-a`).
 * The option `-a` appears with the argument `bc`.
 
 ## How do I use zgclp?
@@ -49,7 +49,7 @@ Copy the boilerplate code [examples/zgclp_boilerplate.rs](examples/zgclp_boilerp
 
 **Long Answer:**
 
-1. Call the function `arg_parse`, giving the command line arguments as an array of strings (`&[&str]`) and the starting position of parsing.
+1. Call the function `arg_parse`, giving the command-line arguments as an array of strings (`&[&str]`) and the starting position of parsing.
 
 2. The return value is a tuple with three values. 
 
@@ -57,10 +57,10 @@ Copy the boilerplate code [examples/zgclp_boilerplate.rs](examples/zgclp_boilerp
 * The second value indicates the increment to the next parse start position if the result is interpreted as an option with no arguments, otherwise None. 
 * The third value is the increment to the next parsing start position and the argument string, if the parsing result is interpreted as an option with arguments. Otherwise, None.
 
-The `arg_parse` can be used to analyze options and normal arguments in the order in which they appear. 
-If it is sufficient to store the values for normal arguments, consider using `arg_parse_a` or `arg_parse_ahv`.
+Use `arg_parse` to do a "full" parsing of options and (normal) arguments, including the order of their appearance.
+If you don't need such full parsing and it is enough to just get the values for normal arguments, consider using `arg_parse_a` or `arg_parse_ahv`.
 
-See a sample code [src/main.rs](src/main.rs) or a boilerplate [examples/zgclp_boilerplate.rs](examples/zgclp_boilerplate.rs).
+See a sample code [src/main.rs](src/main.rs) for `arg_parse` or a boilerplate [examples/zgclp_boilerplate.rs](examples/zgclp_boilerplate.rs) for `arg_parse_ahv`.
 
 ## License
 
