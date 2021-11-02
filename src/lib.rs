@@ -31,6 +31,8 @@ macro_rules! some_pair {
     ( $v1:expr, $v2:expr ) => ( Some(($v1, $v2)) )
 }
 
+pub type ArgParseResult<'s> = (Arg<'s>, Option<usize>, Option<(usize, &'s str)>);
+
 /// Function to parse command line arguments.
 /// To use this function, pass the string array of command-line arguments (`argv: &'a [&'s str]`) and 
 /// the position to start parsing (`index: usize`).  
@@ -40,7 +42,7 @@ macro_rules! some_pair {
 /// interpreted as an option with no arguments, otherwise None.  
 /// The third value is the increment to the next parsing start position and the argument string, 
 /// if the parsing result is interpreted as an option with arguments. Otherwise, None.  
-pub fn arg_parse<'s, 'a>(argv: &'a [&'s str], index: usize) -> (Arg<'s>, Option<usize>, Option<(usize, &'s str)>) {
+pub fn arg_parse<'s, 'a>(argv: &'a [&'s str], index: usize) -> ArgParseResult<'s> {
     let a = argv[index];
     if a == "-" {
         (Arg::Value, None, some_pair!(1, a))
@@ -78,7 +80,7 @@ pub fn arg_parse<'s, 'a>(argv: &'a [&'s str], index: usize) -> (Arg<'s>, Option<
 }
 
 /// Almost the same as arg_parse, but collects the arguments.
-pub fn arg_parse_a<'s, 'a, 'b>(argv: &'a [&'s str], index: usize, args: &'b mut Vec<&'s str>) -> (Arg<'s>, Option<usize>, Option<(usize, &'s str)>) {
+pub fn arg_parse_a<'s, 'a, 'b>(argv: &'a [&'s str], index: usize, args: &'b mut Vec<&'s str>) -> ArgParseResult<'s> {
     let (a, na, wa) = arg_parse(argv, index);
     match a {
         Arg::Value => {
@@ -100,7 +102,7 @@ pub fn arg_parse_a<'s, 'a, 'b>(argv: &'a [&'s str], index: usize, args: &'b mut 
 }
 
 /// Helper function to handle the typical --help option.
-pub fn handle_help_option<'s, 't>(pr: (Arg<'s>, Option<usize>, Option<(usize, &'s str)>), help_message: &'t str) -> (Arg<'s>, Option<usize>, Option<(usize, &'s str)>) {
+pub fn handle_help_option<'s, 't>(pr: ArgParseResult<'s>, help_message: &'t str) -> ArgParseResult<'s> {
     let (a, na, wa) = pr;
     match a {
         Arg::Option("-h" | "--help") => {
@@ -112,7 +114,7 @@ pub fn handle_help_option<'s, 't>(pr: (Arg<'s>, Option<usize>, Option<(usize, &'
 }
 
 /// Helper function to handle the typical --version option.
-pub fn handle_version_option<'s, 't>(pr: (Arg<'s>, Option<usize>, Option<(usize, &'s str)>)) -> (Arg<'s>, Option<usize>, Option<(usize, &'s str)>) {
+pub fn handle_version_option<'s, 't>(pr: ArgParseResult<'s>) -> ArgParseResult<'s> {
     let (a, na, wa) = pr;
     match a {
         Arg::Option("-v" | "--version") => {
@@ -126,7 +128,7 @@ pub fn handle_version_option<'s, 't>(pr: (Arg<'s>, Option<usize>, Option<(usize,
 }
 
 /// Almost the same as arg_parse, but collects the arguments and handles options --help and --version.
-pub fn arg_parse_ahv<'s, 't, 'a, 'b>(argv: &'a [&'s str], index: usize, args: &'b mut Vec<&'s str>, help_message: &'t str) -> (Arg<'s>, Option<usize>, Option<(usize, &'s str)>) {
+pub fn arg_parse_ahv<'s, 't, 'a, 'b>(argv: &'a [&'s str], index: usize, args: &'b mut Vec<&'s str>, help_message: &'t str) -> ArgParseResult<'s> {
     let pr = arg_parse_a(argv, index, args);
     let pr2 = handle_help_option(pr, help_message);
     handle_version_option(pr2)
