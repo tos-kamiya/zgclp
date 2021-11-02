@@ -57,7 +57,8 @@ Copy the boilerplate code [examples/zgclp_boilerplate.rs](examples/zgclp_boilerp
 * The second value indicates the increment to the next parse start position if the result is interpreted as an option with no arguments, otherwise None. 
 * The third value is the increment to the next parsing start position and the argument string, if the parsing result is interpreted as an option with arguments. Otherwise, None.
 
-If you want to let zgclp to collect (normal) command-line arguments, you can use `arg_parse_a` (instead of `arg_parse`) with passing a vector to store the arguments.
+The `arg_parse` can be used to analyze options and normal arguments in the order in which they appear. 
+If it is sufficient to store the values for normal arguments, consider using `arg_parse_a` or `arg_parse_ahv`.
 
 See a sample code [src/main.rs](src/main.rs) or a boilerplate [examples/zgclp_boilerplate.rs](examples/zgclp_boilerplate.rs).
 

@@ -24,7 +24,7 @@ pub enum Arg<'a> {
     Value, // (usual) argument
     Option(&'a str), // option
     Separator(&'a str), // separator
-    Processed, // should be skipped (because the parser has processed it)
+    Processed, // should be skipped (because already processed. generated when `arg_parse_a` or `arg_parse_ahv` is called)
 }
 
 macro_rules! some_pair {
