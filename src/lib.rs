@@ -206,7 +206,10 @@ mod test {
         }
     }
 
-    fn collect_arguments<'s, 'a>(argv: &'a [&'s str]) -> Vec::<&'s str> {
+    #[test]
+    fn argument_collection_simple() {
+        let argv = vec!["foo", "--aa", "1", "--bb=2", "3", "-c4", "5"];
+
         let mut args = Vec::<&str>::new();
         let mut arg_index = 1;
         while arg_index < argv.len() {
@@ -217,29 +220,40 @@ mod test {
                 (Arg::Option(_name), Some(eat), None) => {
                     eat
                 }
-                (Arg::Processed, Some(eat), None) => {
+                (Arg::Processed, Some(eat), _) => {
                     eat
                 }
-                _ => {
-                    panic!("Internal error in command-line parsing.");
-                }
+                _ => { panic!("in argument_collection_simple") }
             };
             arg_index += eat;
         }
-        args
+        assert_eq!(args, vec!["3", "5"]);
     }
 
     #[test]
-    fn argument_collection() {
-        let argv = vec!["a.out", "-a", "1", "2", "-g3"];
-        let args = collect_arguments(&argv);
-        assert_eq!(args, vec!["2"]);
+    fn argument_collection_complicated() {
+        let argv = vec!["foo", "--aa", "--bb=1", "2", "-c=3", "--", "-d", "4"];
 
-        let argv = vec!["a.out", "-a", "1", "--", "2", "-g3"];
-        let args = collect_arguments(&argv);
-        assert_eq!(args, vec!["2", "-g3"]);
+        let mut args = Vec::<&str>::new();
+        let mut arg_index = 1;
+        while arg_index < argv.len() {
+            let eat = match arg_parse_a(&argv, arg_index, &mut args) {
+                (Arg::Option(_name), _, Some((eat, _value))) => {
+                    eat
+                }
+                (Arg::Option(_name), Some(eat), None) => {
+                    eat
+                }
+                (Arg::Processed, Some(eat), _) => {
+                    eat
+                }
+                _ => { panic!("in argument_collection_complicated") }
+            };
+            arg_index += eat;
+        }
+        assert_eq!(args, vec!["2", "-d", "4"]);
     }
-
+    
     #[test]
     fn rstrip_test() {
         assert_eq!(rstrip("abc\n"), "abc");
