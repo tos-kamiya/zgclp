@@ -51,11 +51,11 @@ pub fn arg_parse<'s, 'a>(argv: &'a [&'s str], index: usize) -> ArgParseResult<'s
     } else if a == "--" {
         (Arg::Separator(a), Some(1), None)
     } else if a.starts_with("--") {
-        if let Some(i) = a.find("=") {
+        if let Some(i) = a.find('=') {
             (Arg::Option(&a[..i]), None, some_pair!(1, &a[i + 1..]))
         } else if index + 1 < argv.len() {
             let a2 = argv[index + 1];
-            if a2 == "-" || !a2.starts_with("-") {
+            if a2 == "-" || !a2.starts_with('-') {
                 (Arg::Option(a), Some(1), some_pair!(2, a2))
             } else {
                 (Arg::Option(a), Some(1), None)
@@ -63,12 +63,12 @@ pub fn arg_parse<'s, 'a>(argv: &'a [&'s str], index: usize) -> ArgParseResult<'s
         } else {
             (Arg::Option(a), Some(1), None)
         }
-    } else if a.starts_with("-") {
+    } else if a.starts_with('-') {
         if a.len() > 2 {
             (Arg::Option(&a[..2]), None, some_pair!(1, &a[2..]))
         } else if index + 1 < argv.len() {
             let a2 = argv[index + 1];
-            if a2 == "-" || !a2.starts_with("-") {
+            if a2 == "-" || !a2.starts_with('-') {
                 (Arg::Option(a), Some(1), some_pair!(2, a2))
             } else {
                 (Arg::Option(a), Some(1), None)
@@ -120,8 +120,8 @@ pub fn handle_help_option<'s, 't>(
     }
 }
 
-/// Helper function to handle the typical --version option.
-pub fn handle_version_option<'s, 't>(pr: ArgParseResult<'s>) -> ArgParseResult<'s> {
+/// Helper function to handle the typical --version/-v option.
+pub fn handle_version_option(pr: ArgParseResult) -> ArgParseResult {
     let (a, na, wa) = pr;
     match a {
         Arg::Option("-v" | "--version") => {
@@ -134,7 +134,21 @@ pub fn handle_version_option<'s, 't>(pr: ArgParseResult<'s>) -> ArgParseResult<'
     }
 }
 
-/// Almost the same as arg_parse, but collects the arguments and handles options --help and --version.
+/// Helper function to handle the typical --version/-V option.
+pub fn handle_v_option(pr: ArgParseResult) -> ArgParseResult {
+    let (a, na, wa) = pr;
+    match a {
+        Arg::Option("-V" | "--version") => {
+            let version = env!("CARGO_PKG_VERSION");
+            let name = env!("CARGO_PKG_NAME");
+            println!("{} {}", name, version);
+            std::process::exit(0);
+        }
+        _ => (a, na, wa),
+    }
+}
+
+/// Almost the same as arg_parse, but collects the arguments and handles options --help/-h and --version/-v.
 pub fn arg_parse_ahv<'s, 't, 'a, 'b>(
     argv: &'a [&'s str],
     index: usize,
@@ -144,6 +158,18 @@ pub fn arg_parse_ahv<'s, 't, 'a, 'b>(
     let pr = arg_parse_a(argv, index, args);
     let pr2 = handle_help_option(pr, help_message);
     handle_version_option(pr2)
+}
+
+/// Almost the same as arg_parse, but collects the arguments and handles options --help/-h and --version/-V.
+pub fn arg_parse_ah_v<'s, 't, 'a, 'b>(
+    argv: &'a [&'s str],
+    index: usize,
+    args: &'b mut Vec<&'s str>,
+    help_message: &'t str,
+) -> ArgParseResult<'s> {
+    let pr = arg_parse_a(argv, index, args);
+    let pr2 = handle_help_option(pr, help_message);
+    handle_v_option(pr2)
 }
 
 #[cfg(test)]
@@ -201,13 +227,17 @@ mod test {
         let v = arg_parse(&args, 0);
         match v {
             (Arg::Option("--aa"), Some(1), Some((2, "1"))) => {}
-            _ => { panic!("match fails.") }
+            _ => {
+                panic!("match fails.")
+            }
         }
         match v {
             (Arg::Option("--aa"), _, Some((eat, "1"))) => {
                 assert_eq!(eat, 2 as usize);
             }
-            _ => { panic!("match fails.") }
+            _ => {
+                panic!("match fails.")
+            }
         }
 
         let v = arg_parse(&args, 2);
@@ -216,7 +246,9 @@ mod test {
                 assert_eq!(eat, 1 as usize);
                 assert_eq!(value, "3");
             }
-            _ => { panic!("match fails.") }
+            _ => {
+                panic!("match fails.")
+            }
         }
     }
 
@@ -231,7 +263,9 @@ mod test {
                 (Arg::Option(_name), _, Some((eat, _value))) => eat,
                 (Arg::Option(_name), Some(eat), None) => eat,
                 (Arg::Processed, Some(eat), _) => eat,
-                _ => { panic!("in argument_collection_simple") }
+                _ => {
+                    panic!("in argument_collection_simple")
+                }
             };
             arg_index += eat;
         }
@@ -249,7 +283,9 @@ mod test {
                 (Arg::Option(_name), _, Some((eat, _value))) => eat,
                 (Arg::Option(_name), Some(eat), None) => eat,
                 (Arg::Processed, Some(eat), _) => eat,
-                _ => { panic!("in argument_collection_complicated") }
+                _ => {
+                    panic!("in argument_collection_complicated")
+                }
             };
             arg_index += eat;
         }

@@ -1,12 +1,12 @@
 [package]
 name = "zgclp"
 description = "Zgclp (Zero-grammar definition command-line parser)"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
 authors = ["Toshihiro Kamiya <kamiya@mbj.nifty.com>"]
 license = "MIT/Apache-2.0"
 keywords = ["cli", "parser"]
-category = ["command-line-interface"]
+categories = ["command-line-interface"]
 homepage = "https://github.com/tos-kamiya/zgclp"
 readme = "README.md"
 

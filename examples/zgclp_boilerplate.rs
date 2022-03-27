@@ -42,11 +42,12 @@ fn main() {
             }
 
             // Skip arguments processed by zgclp / Error handling
-            (Arg::Processed, Some(eat), None) => {
-                eat
-            }
+            (Arg::Processed, Some(eat), None) => eat,
             (Arg::Option(name), _, _) => {
-                eprintln!("Error: unknown option, or option missing argument: {}", name);
+                eprintln!(
+                    "Error: unknown option, or option missing argument: {}",
+                    name
+                );
                 std::process::exit(1);
             }
             _ => {

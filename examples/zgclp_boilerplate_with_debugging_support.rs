@@ -48,18 +48,17 @@ fn main() {
             }
 
             // Skip arguments processed by zgclp / Error handling
-            (Arg::Processed, Some(eat), None) => {
-                eat
-            }
+            (Arg::Processed, Some(eat), None) => eat,
             (Arg::Option(name), _, _) => {
-                eprintln!("Error: unknown option, or option missing argument: {}", name);
+                eprintln!(
+                    "Error: unknown option, or option missing argument: {}",
+                    name
+                );
                 std::process::exit(1);
             }
 
             // debug, in case you want to examine the behavior of arg_parse in more detail
-            (Arg::Value, None, Some((eat, _value))) => {
-                eat
-            }
+            (Arg::Value, None, Some((eat, _value))) => eat,
             _ => {
                 panic!("Internal error in command-line parsing.");
             }
